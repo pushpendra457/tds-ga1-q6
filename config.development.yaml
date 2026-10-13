@@ -1,0 +1,3 @@
+port: 8986
+workers: 3
+debug: true
