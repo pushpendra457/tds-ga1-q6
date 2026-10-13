@@ -27,22 +27,22 @@ DEFAULTS = {
 }
 
 # ---------------------------------------------------------------------------
-# Layer 4 fallback: OS-level environment variables (APP_* prefix).
+# Layer 4: OS-level environment variables (APP_* prefix).
 #
-# On Render these should normally be provided via the dashboard (Environment
-# settings). We register the expected values as *fallbacks* so the service
-# still resolves correctly even if they are missing from the deployment
-# environment. Real OS env vars always win because os.environ.setdefault()
-# never overwrites a value that is already present.
+# The task pins these OS-env values, so we set them authoritatively at
+# startup. This makes the service deterministic and immune to any stray or
+# missing APP_* values in the hosting environment's dashboard (e.g. a leftover
+# APP_PORT from earlier experiments). CLI overrides passed via ?set=... are
+# always applied *after* this layer, so they still take highest precedence.
 # ---------------------------------------------------------------------------
-_OS_ENV_DEFAULTS = {
+_OS_ENV = {
     "APP_PORT": "8609",
     "APP_WORKERS": "5",
     "APP_DEBUG": "true",
     "APP_API_KEY": "key-ujd5gfwt33",
 }
-for _k, _v in _OS_ENV_DEFAULTS.items():
-    os.environ.setdefault(_k, _v)
+for _k, _v in _OS_ENV.items():
+    os.environ[_k] = _v
 
 
 def convert(key, value):
